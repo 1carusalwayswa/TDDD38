@@ -16,7 +16,7 @@ public:
 	}
 
 	Stack& operator <<(T&& element) {
-		st.emplace_back(std::forward<T>(element));
+		st.push_back(std::forward<T>(element));
 		return *this;
 	}
 
