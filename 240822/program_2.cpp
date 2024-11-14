@@ -15,7 +15,7 @@ template<typename T, size_t N>
 struct isArr<T[N]> : std::true_type {};
 
 template<typename T>
-struct isArr<T[]> : std::false_type {};
+struct isArr<T[]> : std::true_type {};
 
 template<typename T>
 concept isBool = std::is_same_v<T, bool>;
