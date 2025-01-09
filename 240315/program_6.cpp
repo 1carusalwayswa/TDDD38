@@ -22,12 +22,18 @@ struct Damage
 
 class ComponentBase {
 private:
-public:
     std::type_index component_type;
-    ComponentBase(std::type_index component_type) : component_type(component_type) {};
+public:
+    ComponentBase(std::type_index component_type) : component_type{ component_type } {};
+
     virtual ~ComponentBase() = 0;
+
     bool operator==(std::type_index other) {
         return component_type == other;
+    }
+
+    virtual std::type_index get_type() const {
+        return component_type;
     }
 };
 ComponentBase::~ComponentBase() {};
@@ -37,9 +43,10 @@ class Component : public ComponentBase {
 private:
     T val;
 public:
-    Component(T val) : val{ val }, ComponentBase{ typeid(T) } {
-    };
+    Component(T val) : val{ val }, ComponentBase{ typeid(T) } {};
+
     ~Component() override = default;
+
     T& get() {
         return val;
     }
@@ -48,38 +55,35 @@ public:
 class Entity {
 private:
     std::vector<std::shared_ptr<ComponentBase>> components;
+
+    template<typename T>
+    std::shared_ptr<Component<T>> get_component() {
+        for (auto& component: components) {
+            if (component->get_type() == typeid(T)) {
+                return std::dynamic_pointer_cast<Component<T>>(component);
+            }
+        }
+        return nullptr;
+    }
+
 public:
     Entity() = default;
     Entity(Entity const&) = delete;
-    Entity(Entity &&) = delete;
     Entity& operator=(Entity const&) = delete; 
-    Entity& operator=(Entity &&) = delete;
 
     template<typename T>
     void add(T val) {
-        std::shared_ptr<ComponentBase> tmp_ptr = std::make_shared<Component<T>>(val);
-        components.push_back(tmp_ptr);
+        components.push_back(std::make_shared<Component<T>>(val));
     }
 
     template<typename T>
     bool has() {
-        for (auto component_ptr: components) {
-            // std::cout << (component_ptr->component_type).name() << '\n';
-            if ((*component_ptr) == typeid(T)) {
-                return true;
-            }
-        }
-        return false;
+        return get_component<T>() != nullptr;
     }
 
     template<typename T>
     T& get() {
-        for (auto component_ptr: components) {
-            if ((*component_ptr) == typeid(T)) {
-                auto derived_ptr = std::dynamic_pointer_cast<Component<T>>(component_ptr);
-                return derived_ptr->get();
-            }
-        }
+        return get_component<T>()->get();
     }
 };
 
@@ -134,5 +138,4 @@ int main()
                       << std::endl;
         }
     }
-    
 }
