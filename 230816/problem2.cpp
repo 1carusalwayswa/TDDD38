@@ -75,7 +75,7 @@ struct Test
 
 struct Multiply
 {
-    int operator()(int a, int b)
+    int operator()(int a, int b) const
     {
 	return a * b;
     }
