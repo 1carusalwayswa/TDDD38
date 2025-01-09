@@ -1,8 +1,10 @@
 /*
 Essentially, we just want a variable could flexibly store some known type(Name, Health, Damage),
+and one type only use once.
 So, obviously, we could use std::variant to do this work
 and using get_if<T> could easily get T from specific variant,
 if this variant doesn't store T, get_if will return a nullptr.
+First time, come up a better idea(maybe?) than christoffer solution!
 */
 #include <typeindex>
 #include <vector>
