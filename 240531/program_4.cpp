@@ -1,3 +1,6 @@
+// essentialy, when we want to use no-loop way to read several data.
+// we always follow this routine: string -> stringstream -> special data (Thx, my bro ohao)
+
 #include <iostream>
 #include <vector>
 #include <set>
@@ -7,13 +10,13 @@
 #include <numeric>
 #include <sstream>
 
-struct Line {
-    std::string str;
-};
-
 namespace std {
-    std::istream& operator>>(std::istream& is, Line& line) {
-        std::getline(is, line.str, '\n');
+    std::istream& operator>>(std::istream& is, std::set<std::string>& words) {
+        std::string line;
+        std::getline(is, line, '\n');
+        std::stringstream ss(line);
+        words = std::set<std::string>{std::istream_iterator<std::string> {ss},
+                        std::istream_iterator<std::string> {}};
         return is;
     }
 }
@@ -26,16 +29,17 @@ std::set<std::string> get_common_words(std::set<std::string> const& a, std::set<
 }
 
 int main() {
-    std::vector<std::set<std::string>> lines {};
-    std::transform(std::istream_iterator<Line>{std::cin},
-                   std::istream_iterator<Line>{ },
-                   std::back_inserter(lines),
-                   [](Line const& line) {
-                        std::stringstream ss(line.str);
-                        std::set<std::string> words {std::istream_iterator<std::string> {ss},
-                                        std::istream_iterator<std::string> {}};
-                        return words;
-                   });
+    std::vector<std::set<std::string>> lines { std::istream_iterator<std::set<std::string>> { std::cin }, 
+                                                std::istream_iterator<std::set<std::string>> { }};
+    // std::transform(std::istream_iterator<Line>{std::cin},
+    //                std::istream_iterator<Line>{ },
+    //                std::back_inserter(lines),
+    //                [](Line const& line) {
+    //                     std::stringstream ss(line.str);
+    //                     std::set<std::string> words {std::istream_iterator<std::string> {ss},
+    //                                     std::istream_iterator<std::string> {}};
+    //                     return words;
+    //                });
     
     // lines.erase(std::remove_if(std::begin(lines), std::end(lines), [](auto&& words) {
     //     return words.size() == 0;
