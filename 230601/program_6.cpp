@@ -24,10 +24,6 @@ namespace std {
                                          std::istream_iterator<int> { } };
         return is;
     }
-
-    // ostream& operator<<(ostream& os, double data) {
-    //     os << 
-    // }
 }
 
 int main() {
